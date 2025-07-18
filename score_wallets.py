@@ -6,20 +6,16 @@ from datetime import datetime
 from sklearn.preprocessing import MinMaxScaler
 import os
 
-# === Step 1: Load JSON File ===
 def load_data(json_path):
     with open(json_path, "r") as f:
         data = json.load(f)
     df = pd.json_normalize(data)
     return df
 
-# === Step 2: Preprocess Transactions ===
 def preprocess(df):
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
     df['amount_usd'] = df['actionData.amount'].astype(float) * df['actionData.assetPriceUSD'].astype(float)
-    return df
-
-# === Step 3: Feature Engineering Per Wallet ===
+  
 def extract_features(df):
     wallets = defaultdict(lambda: {
         'total_deposit_usd': 0, 'total_borrow_usd': 0, 'total_repay_usd': 0, 'total_redeem_usd': 0,
@@ -77,7 +73,6 @@ def extract_features(df):
         })
     return pd.DataFrame(records)
 
-# === Step 4: Scoring Logic ===
 def score_wallets(df):
     features = ['total_deposit_usd', 'total_repay_usd', 'repay_rate',
                 'deposit_to_withdraw_ratio', 'activity_span_days']
@@ -92,7 +87,6 @@ def score_wallets(df):
     df['score'] = MinMaxScaler((0, 1000)).fit_transform(raw_score.values.reshape(-1, 1)).astype(int)
     return df[['wallet', 'score']].sort_values(by='score', ascending=False)
 
-# === Main Execution ===
 if __name__ == "__main__":
     input_path = "data/user_transactions.json"
     output_path = "output/wallet_scores.csv"
