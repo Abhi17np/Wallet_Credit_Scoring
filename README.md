@@ -25,7 +25,7 @@ Score Wallets (Rule-based + Normalization)
 Export CSV (wallet, score)
 ```
 
-## 🧮 Scoring Logic
+## Scoring Logic
 
 ### Normalized Positive Factors:
 
